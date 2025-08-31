@@ -89,8 +89,9 @@ class CeleryConfig:
         "superset.tasks.cache",
     )
     result_backend = f"redis://{REDIS_HOST}:{REDIS_PORT}/{REDIS_RESULTS_DB}"
+    worker_concurrency = 4  # or 6 if mostly dashboard queries
     worker_prefetch_multiplier = 1
-    task_acks_late = False
+    task_acks_late = True     # ensures tasks aren’t lost if a worker crashes
     beat_schedule = {
         "reports.scheduler": {
             "task": "reports.scheduler",
@@ -101,7 +102,7 @@ class CeleryConfig:
             "schedule": crontab(minute=10, hour=0),
         },
     }
-
+ENABLE_UI_THEME_ADMINISTRATION = True
 
 CELERY_CONFIG = CeleryConfig
 
@@ -142,3 +143,23 @@ try:
     )
 except ImportError:
     logger.info("Using default Docker config...")
+
+CACHE_CONFIG = {
+    'CACHE_TYPE': 'RedisCache',
+    'CACHE_DEFAULT_TIMEOUT': 300,
+    'CACHE_KEY_PREFIX': 'superset_',
+    'CACHE_REDIS_URL': 'redis://superset_cache:6379/0',
+}
+DATA_CACHE_CONFIG = CACHE_CONFIG
+THUMBNAIL_CACHE_CONFIG = CACHE_CONFIG
+
+APP_NAME = "Tunza Analytics Solutions"
+
+APP_ICON = "/superset/tunza_images/tunza_logo.png"
+
+LOGO_TARGET_PATH = "https://www.tunzaanalytics.com"
+
+FAVICONS = [
+     {"href": "superset/tunza_images/favicon_io/favicon.ico"}
+]
+SUPERSET_ROW_LIMIT = 10000

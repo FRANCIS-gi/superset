@@ -32,6 +32,7 @@ x-superset-volumes: &superset-volumes
   - ./superset-frontend:/app/superset-frontend
   - superset_home:/app/superset_home
   - ./tests:/app/tests
+  - /root/superset/tunza_images:/superset/tunza_images
 x-common-build: &common-build
   context: .
   target: ${SUPERSET_BUILD_TARGET:-dev} # can use `dev` (default) or `lean`
@@ -98,9 +99,9 @@ services:
     command: ["/app/docker/docker-bootstrap.sh", "app"]
     restart: unless-stopped
     ports:
-      - 8088:8088
-      # When in cypress-mode ->
-      - 8081:8081
+      - "0.0.0.0:8088:8088"   # binds to all host interfaces
+
+      - "0.0.0.0:8081:8081" # optional for cypress/dev mode
     extra_hosts:
       - "host.docker.internal:host-gateway"
     user: *superset-user
